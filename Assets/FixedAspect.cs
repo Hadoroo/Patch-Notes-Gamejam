@@ -41,8 +41,8 @@ public class FixedAspect : SingletonMonoBehaviour<FixedAspect>
         targetWidth -= shrinkSpeed * Time.deltaTime;
         targetHeight -= shrinkSpeed * Time.deltaTime;
 
-        targetWidth = Mathf.Max(200f, targetWidth);
-        targetHeight = Mathf.Max(200f, targetHeight);
+        targetWidth = Mathf.Max(100f, targetWidth);
+        targetHeight = Mathf.Max(100f, targetHeight);
 
         // Smooth menuju target
         if ((int)currentWidth != (int)targetWidth || (int)currentHeight != (int)targetHeight)
@@ -72,8 +72,8 @@ public class FixedAspect : SingletonMonoBehaviour<FixedAspect>
             targetHeight += growAmount;
 
         // Clamp supaya tidak melebihi max
-        targetWidth = Mathf.Clamp(targetWidth, 200f, maxWidth);
-        targetHeight = Mathf.Clamp(targetHeight, 200f, maxHeight);
+        targetWidth = Mathf.Clamp(targetWidth, 100f, maxWidth);
+        targetHeight = Mathf.Clamp(targetHeight, 100f, maxHeight);
     }
 
 
