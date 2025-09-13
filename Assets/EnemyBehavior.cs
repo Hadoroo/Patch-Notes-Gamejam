@@ -5,7 +5,8 @@ public enum EnemyType
 {
     Basic,
     Dasher,
-    Gunner
+    Gunner,
+    Orbiter
 }
 
 public class EnemyBehavior : MonoBehaviour
@@ -24,11 +25,23 @@ public class EnemyBehavior : MonoBehaviour
 
     public GameObject projectilePrefab;
 
+    public float orbitBaseSpeed = 100f; // orbit rotation speed in degrees/sec
+    public float approachSpeed = 0.5f; // speed to decrease orbit radius
+    private float orbitRadius;
+    private float orbitAngle; //
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
         enemyCollider = GetComponent<Collider2D>();
+
+        if (enemyType == EnemyType.Orbiter)
+        {
+            orbitRadius = Vector2.Distance(transform.position, player.position);
+            Vector2 dir = (Vector2)transform.position - (Vector2)player.position;
+            orbitAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        }
     }
 
     // Update is called once per frame
@@ -39,61 +52,116 @@ public class EnemyBehavior : MonoBehaviour
 
     void Move()
     {
-        if (enemyType == EnemyType.Basic)
+        switch (enemyType)
         {
-            Vector2 direction = (player.position - transform.position).normalized;
-            rb.linearVelocity = direction * moveSpeed;
-            RotateTowards(direction);
-        }
-        if (enemyType == EnemyType.Gunner)
-        {
-            Vector2 direction = (player.position - transform.position).normalized;
-            float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+            case EnemyType.Basic:
+                MoveTowardsPlayer(moveSpeed);
+                break;
 
-            // Movement
-            if (distanceToPlayer < 3f)
-                rb.linearVelocity = Vector2.zero;
+            case EnemyType.Orbiter:
+                OrbitPlayer();
+                break;
+
+            case EnemyType.Gunner:
+                GunnerBehavior();
+                break;
+
+            case EnemyType.Dasher:
+                DasherBehavior();
+                break;
+        }
+    }
+
+    void MoveTowardsPlayer(float speed)
+    {
+        Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
+        rb.linearVelocity = direction * speed;
+        RotateTowards(direction);
+    }
+
+    void OrbitPlayer()
+    {
+        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+
+        if (distanceToPlayer > 4f)
+        {
+            // Dekat dulu sampai radius tertentu
+            MoveTowardsPlayer(moveSpeed);
+            orbitRadius = distanceToPlayer;
+        }
+        else
+        {
+            // Radius mengecil perlahan
+            orbitRadius = Mathf.Max(0.5f, orbitRadius - approachSpeed * Time.deltaTime);
+
+            // Update orbit angle (kalikan moveSpeed untuk menambah orbit speed)
+            orbitAngle += orbitBaseSpeed * moveSpeed * Time.deltaTime;
+            if (orbitAngle > 360f) orbitAngle -= 360f;
+
+            float rad = orbitAngle * Mathf.Deg2Rad;
+            Vector2 targetPos = (Vector2)player.position + new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)) * orbitRadius;
+
+            // Hitung velocity proporsional ke targetPos
+            Vector2 toTarget = targetPos - (Vector2)transform.position;
+            float distance = toTarget.magnitude;
+
+            if (distance > 0.01f)
+            {
+                Vector2 direction = toTarget.normalized;
+                rb.linearVelocity = direction * Mathf.Min(moveSpeed * 5f, distance / Time.deltaTime);
+                RotateTowards(direction);
+            }
             else
-                rb.linearVelocity = direction * moveSpeed;
-
-            RotateTowards(direction);
-
-            // Shooting timer
-            shootTimer -= Time.deltaTime;
-            if (shootTimer <= 0f)
             {
-                Shoot();
-                shootTimer = shootCooldown; // reset timer
-            }
-        }
-        if (enemyType == EnemyType.Dasher)
-        {
-            float distanceToPlayer = Vector2.Distance(transform.position, player.position);
-
-            if (isDashing)
-            {
-                Vector2 direction = (dashTarget - (Vector2)transform.position).normalized;
-            }
-            else if (isCharging) // saat delay
-            {
-                RotateTowards((player.position - transform.position).normalized);
-                rb.linearVelocity = Vector2.zero; // berhenti
-            }
-            else // normal movement
-            {
-                if (distanceToPlayer < 3f)
-                {
-                    StartCoroutine(DashAfterDelay(2f));
-                }
-                else if (!isDashing)
-                {
-                    Vector2 direction = (player.position - transform.position).normalized;
-                    rb.linearVelocity = direction * moveSpeed;
-                    RotateTowards(direction);
-                }
+                rb.linearVelocity = Vector2.zero;
             }
         }
     }
+
+    void GunnerBehavior()
+    {
+        Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
+        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+
+        // Movement
+        if (distanceToPlayer < 3f)
+            rb.linearVelocity = Vector2.zero;
+        else
+            rb.linearVelocity = direction * moveSpeed;
+
+        RotateTowards(direction);
+
+        // Shooting
+        shootTimer -= Time.deltaTime;
+        if (shootTimer <= 0f)
+        {
+            Shoot();
+            shootTimer = shootCooldown;
+        }
+    }
+
+    void DasherBehavior()
+    {
+        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+
+        if (isCharging)
+        {
+            rb.linearVelocity = Vector2.zero;
+            RotateTowards((Vector2)player.position - (Vector2)transform.position);
+        }
+        else if (!isDashing && !isCharging)
+        {
+            if (distanceToPlayer < 3f)
+            {
+                StartCoroutine(DashAfterDelay(2f));
+            }
+            else if (!isDashing)
+            {
+                MoveTowardsPlayer(moveSpeed);
+            }
+        }
+    }
+
 
     IEnumerator DashAfterDelay(float delay)
     {
@@ -109,8 +177,7 @@ public class EnemyBehavior : MonoBehaviour
 
         // Hitung arah dash
         Vector2 dashDirection = (dashTarget - (Vector2)transform.position).normalized;
-        rb.linearVelocity = dashDirection * (moveSpeed * 3f); // kecepatan dash
-
+        rb.linearVelocity = dashDirection * moveSpeed * 3f;
         // Tunggu selama dashDuration
         float dashDuration = 2f;
         yield return new WaitForSeconds(dashDuration);
@@ -123,7 +190,7 @@ public class EnemyBehavior : MonoBehaviour
         GameObject bullet = Instantiate(projectilePrefab, transform.position, transform.rotation);
         Rigidbody2D rbBullet = bullet.GetComponent<Rigidbody2D>();
         rbBullet.linearVelocity = transform.up * bulletSpeed; // pakai velocity
-        Destroy(bullet, 1f);
+        Destroy(bullet, 2f);
     }
 
     void RotateTowards(Vector2 direction)
@@ -138,6 +205,8 @@ public class EnemyBehavior : MonoBehaviour
         {
             // Destroy(other.gameObject);
             Destroy(gameObject);
+            PlayerHealth.Instance.TakeDamage();
         }
     }
+
 }
