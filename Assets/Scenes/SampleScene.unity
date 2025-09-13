@@ -270,7 +270,7 @@ GameObject:
   - component: {fileID: 552150601}
   - component: {fileID: 552150600}
   m_Layer: 0
-  m_Name: Triangle
+  m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -341,7 +341,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -366,7 +366,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 2
+  shootCooldown: 2
+  bulletSpeed: 5
+  shootTimer: 0
   rb: {fileID: 552150601}
+  enemyType: 2
+  projectilePrefab: {fileID: 3496719997643880390, guid: a2d2cd38ee9178148bc8e03349f8c9b2, type: 3}
 --- !u!212 &552150603
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -431,8 +436,8 @@ Transform:
   m_GameObject: {fileID: 552150599}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.4123, y: 0.62, z: 0}
-  m_LocalScale: {x: 1.5192568, y: 0.8907, z: 1}
+  m_LocalPosition: {x: 6.73, y: 1.67, z: 0}
+  m_LocalScale: {x: 1.0052923, y: 0.5893762, z: 0.6617}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -803,6 +808,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1731515873}
   - component: {fileID: 1731515872}
+  - component: {fileID: 1731515874}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -841,6 +847,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1731515874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1731515871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccf86d62c7bade74380f98721c86fbd0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  basicEnemyPrefab: {fileID: 0}
+  dasherEnemyPrefab: {fileID: 0}
+  gunnerEnemyPrefab: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
