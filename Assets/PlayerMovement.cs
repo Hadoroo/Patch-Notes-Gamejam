@@ -54,9 +54,20 @@ public class PlayerMovement : MonoBehaviour
         float worldWidth = FixedAspect.Instance.CurrentWidthWorld;
         float worldHeight = FixedAspect.Instance.CurrentHeightWorld;
 
-        // Batas kiri/kanan/atas/bawah (pakai setengah ukuran)
-        float halfW = worldWidth / 2f;
-        float halfH = worldHeight / 2f;
+        // Ambil setengah ukuran player (asumsi BoxCollider2D)
+        float halfPlayerW = 0.5f;
+        float halfPlayerH = 0.5f;
+
+        BoxCollider2D bc = GetComponent<BoxCollider2D>();
+        if (bc != null)
+        {
+            halfPlayerW = bc.size.x * 0.5f;
+            halfPlayerH = bc.size.y * 0.5f;
+        }
+
+        // Batas kiri/kanan/atas/bawah dikurangi setengah ukuran player
+        float halfW = worldWidth / 2f - halfPlayerW;
+        float halfH = worldHeight / 2f - halfPlayerH;
 
         Vector2 pos = rb.position;
         pos.x = Mathf.Clamp(pos.x, -halfW, halfW);
@@ -64,4 +75,5 @@ public class PlayerMovement : MonoBehaviour
 
         rb.position = pos;
     }
+
 }
