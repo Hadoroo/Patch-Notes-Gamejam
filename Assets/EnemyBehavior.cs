@@ -10,7 +10,7 @@ public enum EnemyType
 
 public class EnemyBehavior : MonoBehaviour
 {
-    public float moveSpeed = 2f;
+    public float moveSpeed = 2f, shootCooldown = 2f, bulletSpeed = 5f, shootTimer = 0f;
     Collider2D enemyCollider;
 
     public Rigidbody2D rb;
@@ -21,6 +21,8 @@ public class EnemyBehavior : MonoBehaviour
 
     private bool isDashing = false, isCharging = false;
     private Vector2 dashTarget;
+
+    public GameObject projectilePrefab;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -37,11 +39,32 @@ public class EnemyBehavior : MonoBehaviour
 
     void Move()
     {
-        if(enemyType == EnemyType.Basic || enemyType == EnemyType.Gunner)
+        if (enemyType == EnemyType.Basic)
         {
             Vector2 direction = (player.position - transform.position).normalized;
             rb.linearVelocity = direction * moveSpeed;
             RotateTowards(direction);
+        }
+        if (enemyType == EnemyType.Gunner)
+        {
+            Vector2 direction = (player.position - transform.position).normalized;
+            float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+
+            // Movement
+            if (distanceToPlayer < 3f)
+                rb.linearVelocity = Vector2.zero;
+            else
+                rb.linearVelocity = direction * moveSpeed;
+
+            RotateTowards(direction);
+
+            // Shooting timer
+            shootTimer -= Time.deltaTime;
+            if (shootTimer <= 0f)
+            {
+                Shoot();
+                shootTimer = shootCooldown; // reset timer
+            }
         }
         if (enemyType == EnemyType.Dasher)
         {
@@ -95,7 +118,13 @@ public class EnemyBehavior : MonoBehaviour
         Destroy(gameObject); // hilang setelah dash selesai
     }
 
-
+    void Shoot()
+    {
+        GameObject bullet = Instantiate(projectilePrefab, transform.position, transform.rotation);
+        Rigidbody2D rbBullet = bullet.GetComponent<Rigidbody2D>();
+        rbBullet.linearVelocity = transform.up * bulletSpeed; // pakai velocity
+        Destroy(bullet, 1f);
+    }
 
     void RotateTowards(Vector2 direction)
     {
