@@ -2,8 +2,14 @@ using UnityEngine;
 
 public class FixedAspect : SingletonMonoBehaviour<FixedAspect>
 {
-    private float currentWidth = 1280f;
-    private float currentHeight = 720f;
+    private float currentWidth;
+    private float currentHeight;
+
+    public float maxWidth = 1280f;
+    public float maxHeight = 720f;
+
+    public float CurrentWidthWorld => currentWidth / 100f;   // scale px → world
+    public float CurrentHeightWorld => currentHeight / 100f;
 
     private float targetWidth;
     private float targetHeight;
@@ -18,6 +24,9 @@ public class FixedAspect : SingletonMonoBehaviour<FixedAspect>
     {
         Screen.fullScreen = false;
         cam = Camera.main;
+
+        currentHeight = maxHeight;
+        currentWidth = maxWidth;
 
         targetWidth = currentWidth;
         targetHeight = currentHeight;
@@ -57,18 +66,16 @@ public class FixedAspect : SingletonMonoBehaviour<FixedAspect>
     {
         float growAmount = 100f; // px tiap tembakan
 
-        if (viewportPos.x < 0f) // kiri
+        if (viewportPos.x < 0f || viewportPos.x > 1f) // kiri atau kanan
             targetWidth += growAmount;
-        else if (viewportPos.x > 1f) // kanan
-            targetWidth += growAmount;
-        else if (viewportPos.y < 0f) // bawah
-            targetHeight += growAmount;
-        else if (viewportPos.y > 1f) // atas
+        if (viewportPos.y < 0f || viewportPos.y > 1f) // bawah atau atas
             targetHeight += growAmount;
 
-        targetWidth = Mathf.Max(200f, targetWidth);
-        targetHeight = Mathf.Max(200f, targetHeight);
+        // Clamp supaya tidak melebihi max
+        targetWidth = Mathf.Clamp(targetWidth, 200f, maxWidth);
+        targetHeight = Mathf.Clamp(targetHeight, 200f, maxHeight);
     }
+
 
     void UpdateCameraSize()
     {

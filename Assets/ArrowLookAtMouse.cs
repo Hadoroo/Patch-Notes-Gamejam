@@ -26,7 +26,7 @@ public class ArrowLookAtMouse : MonoBehaviour
         transform.rotation = Quaternion.Euler(0, 0, angle - 90);
 
         // Posisikan arrow tetap di keliling lingkaran
-        float radius = 0.8f; // jarak dari player ke arrow (atur sesuai ukuran lingkaran)
+        float radius = 0.5f; // jarak dari player ke arrow (atur sesuai ukuran lingkaran)
         transform.position = player.position + direction.normalized * radius;
     }
 }
