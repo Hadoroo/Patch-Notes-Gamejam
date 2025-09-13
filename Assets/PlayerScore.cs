@@ -1,16 +1,55 @@
 using UnityEngine;
+using TMPro;
 
-public class PlayerScore : MonoBehaviour
+public class ScoreManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    // Make this class global
+    public static ScoreManager Instance { get; private set; }
+    private float score = 0f;
+    public int Score => Mathf.FloorToInt(score);
+    public float scoreRate = 10f;
+    public TextMeshProUGUI scoreText;
+
+    private void Awake()
     {
-        
+        // Set up the singleton instance
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        score += scoreRate * Time.deltaTime;
+        UpdateScoreText();
+        Debug.Log(score);
+    }
+
+    void UpdateScoreText()
+    {
+        if (scoreText != null)
+        {
+            scoreText.text = "Score: " + Score.ToString();
+        }
+    }
+
+    // Adding score method
+    public void AddPoints(int points)
+    {
+        score += points;
+        UpdateScoreText();
+    }
+
+    // Minus score method if needed
+    public void SubtractPoints(int points)
+    {
+        score -= points;
+        UpdateScoreText();
     }
 }
