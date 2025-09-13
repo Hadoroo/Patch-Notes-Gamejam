@@ -4,7 +4,7 @@ using UnityEngine;
 public class ObstacleSpawner : MonoBehaviour
 {
     public GameObject obstaclePrefab;
-    public float spawnInterval = 1.0f;
+    public float spawnInterval = 40f;
     public float spawnMargin = 1.0f;
 
     private Camera mainCamera;
