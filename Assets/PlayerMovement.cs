@@ -9,7 +9,9 @@ public class PlayerMovement : MonoBehaviour
 
     public GameObject projectilePrefab;
 
-
+    // FireRate and Cooldown
+    public float fireRate = 0.2f; // Time in seconds between shots
+    private float nextFireTime = 0f;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -24,10 +26,15 @@ public class PlayerMovement : MonoBehaviour
 
         Move();
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        // Input Shoot adn check cooldown
+        if ((Input.GetKey(KeyCode.Space) || Input.GetMouseButton(0)) && Time.time >= nextFireTime)
         {
             Shoot();
+
+            // Set Cooldown
+            nextFireTime = Time.time + fireRate;
         }
+        
     }
 
     void Move()
