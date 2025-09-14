@@ -11,6 +11,8 @@ public class FixedAspect : SingletonMonoBehaviour<FixedAspect>
     public float CurrentWidthWorld => currentWidth / 100f;   // scale px → world
     public float CurrentHeightWorld => currentHeight / 100f;
 
+    bool isGameOver = false;
+
     private float targetWidth;
     private float targetHeight;
 
@@ -36,6 +38,23 @@ public class FixedAspect : SingletonMonoBehaviour<FixedAspect>
     }
 
     void Update()
+    {
+        isGameOver = GameManager.Instance.IsGameOver();
+
+        if (!isGameOver)
+        {
+            HandleResize();
+        }
+        else
+        {
+            // Kunci ukuran saat game over
+            targetWidth = maxWidth;
+            targetHeight = maxHeight;
+        }
+
+    }
+
+    void HandleResize()
     {
         // Target otomatis mengecil
         targetWidth -= shrinkSpeed * Time.deltaTime;

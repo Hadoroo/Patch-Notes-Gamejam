@@ -8,6 +8,8 @@ public class EnemySpawner : MonoBehaviour
     public float minSpawnInterval = 1f; // batas minimal interval
     public float decreaseStep = 0.5f; // berapa detik dikurangi setiap 30 detik
 
+    Transform player;
+
     float worldWidth, worldHeight, time;
 
     void Start()
@@ -15,6 +17,7 @@ public class EnemySpawner : MonoBehaviour
         worldWidth = FixedAspect.Instance.CurrentWidthWorld;
         worldHeight = FixedAspect.Instance.CurrentHeightWorld;
         timer = spawnInterval;
+        player = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
     void Update()
@@ -35,13 +38,22 @@ public class EnemySpawner : MonoBehaviour
         GameObject[] enemies = { basicEnemyPrefab, dasherEnemyPrefab, gunnerEnemyPrefab, orbiterEnemyPrefab };
         GameObject enemyPrefab = enemies[Random.Range(0, enemies.Length)];
 
-        // tentukan posisi spawn random
-        float x = Random.Range(-worldWidth / 2f, worldWidth / 2f);
-        float y = Random.Range(-worldHeight / 2f, worldHeight / 2f);
-        Vector2 spawnPos = new Vector2(x, y);
+        // posisi player
+        Vector2 playerPos = player.transform.position;
+
+        // arah random (sudut 0–360 derajat)
+        float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
+        Vector2 direction = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+
+        // jarak random 8–12
+        float distance = Random.Range(5f, 8f);
+
+        // posisi spawn
+        Vector2 spawnPos = playerPos + direction * distance;
 
         Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
     }
+
 
     void UpdateSpawnInterval()
     {

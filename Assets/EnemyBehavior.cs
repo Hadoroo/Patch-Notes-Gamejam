@@ -20,7 +20,7 @@ public class EnemyBehavior : MonoBehaviour
 
     Transform player;
 
-    private bool isDashing = false, isCharging = false;
+    private bool isDashing = false, isCharging = false, hasExploded = false, isWalking = false;
     private Vector2 dashTarget;
 
     public GameObject projectilePrefab;
@@ -62,6 +62,10 @@ public class EnemyBehavior : MonoBehaviour
 
             case EnemyType.Orbiter:
                 OrbitPlayer();
+                if (hasExploded)
+                {
+                    StartCoroutine(DestroyAfterDelay(2f));
+                }
                 break;
 
             case EnemyType.Gunner:
@@ -78,11 +82,11 @@ public class EnemyBehavior : MonoBehaviour
     {
         Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
         rb.linearVelocity = direction * speed;
-        RotateTowards(direction);
     }
 
     void OrbitPlayer()
     {
+        if (hasExploded) return;
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
 
         if (distanceToPlayer > 4f)
@@ -107,15 +111,18 @@ public class EnemyBehavior : MonoBehaviour
             Vector2 toTarget = targetPos - (Vector2)transform.position;
             float distance = toTarget.magnitude;
 
-            if (distance > 0.01f)
+            if (distance < 0.01f)
             {
-                Vector2 direction = toTarget.normalized;
-                rb.linearVelocity = direction * Mathf.Min(moveSpeed * 5f, distance / Time.deltaTime);
-                RotateTowards(direction);
+                transform.gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                Transform explosionRadius = transform.Find("ExplosionRadius");
+                explosionRadius.gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                rb.linearVelocity = Vector2.zero;
+                hasExploded = true;
             }
             else
             {
-                rb.linearVelocity = Vector2.zero;
+                Vector2 direction = toTarget.normalized;
+                rb.linearVelocity = direction * Mathf.Min(moveSpeed * 5f, distance / Time.deltaTime);
             }
         }
     }
@@ -124,20 +131,31 @@ public class EnemyBehavior : MonoBehaviour
     {
         Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
         float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        RotateTowards(direction);
+        FlipSprite(transform.position.x - player.position.x);
+
+        animator.SetBool("isWalking", distanceToPlayer >= 3f);
 
         // Movement
         if (distanceToPlayer < 3f)
+        {
             rb.linearVelocity = Vector2.zero;
+            isWalking = false;
+        }
         else
+        {
             rb.linearVelocity = direction * moveSpeed;
+            isWalking = true;
 
-        RotateTowards(direction);
+        }
+
+
 
         // Shooting
         shootTimer -= Time.deltaTime;
         if (shootTimer <= 0f)
         {
-            Shoot();
+            Shoot(transform.localScale.x);
             shootTimer = shootCooldown;
         }
     }
@@ -151,6 +169,7 @@ public class EnemyBehavior : MonoBehaviour
             animator.SetBool("isWalking", false);
             animator.SetBool("isCharging", true);
             rb.linearVelocity = Vector2.zero;
+            FlipSprite(transform.position.x - player.position.x);
             RotateTowards((Vector2)player.position - (Vector2)transform.position);
         }
         else if (!isDashing && !isCharging)
@@ -162,6 +181,8 @@ public class EnemyBehavior : MonoBehaviour
             else if (!isDashing)
             {
                 animator.SetBool("isWalking", true);
+                FlipSprite(transform.position.x - player.position.x);
+                RotateTowards((Vector2)player.position - (Vector2)transform.position);
                 MoveTowardsPlayer(moveSpeed);
             }
         }
@@ -190,18 +211,50 @@ public class EnemyBehavior : MonoBehaviour
         Destroy(gameObject); // hilang setelah dash selesai
     }
 
-    void Shoot()
+    void Shoot(float scaleX)
     {
         GameObject bullet = Instantiate(projectilePrefab, transform.position, transform.rotation);
         Rigidbody2D rbBullet = bullet.GetComponent<Rigidbody2D>();
-        rbBullet.linearVelocity = transform.up * bulletSpeed; // pakai velocity
+        if (scaleX < 0)
+        {
+             rbBullet.linearVelocity = transform.right * bulletSpeed; // pakai velocity
+        }
+        else
+        {
+             rbBullet.linearVelocity = -transform.right * bulletSpeed; // pakai velocity
+        }
         Destroy(bullet, 2f);
     }
 
     void RotateTowards(Vector2 direction)
     {
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        rb.rotation = angle - 180f;
+        if (transform.localScale.x > 0)
+        {
+            rb.rotation = angle - 180f;
+        }
+        else
+        {
+            rb.rotation = angle;
+        }
+    }
+
+    void FlipSprite(float distance)
+    {
+        if (distance < 0)
+        {
+            transform.localScale = new Vector3(-0.3156904f, 0.3156904f, 0.3156904f);
+        }
+        else
+        {
+            transform.localScale = new Vector3(0.3156904f, 0.3156904f, 0.3156904f); ;
+        }
+    }
+
+    IEnumerator DestroyAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        Destroy(gameObject);
     }
 
     private void OnTriggerEnter2D(Collider2D other)

@@ -1,13 +1,15 @@
 using UnityEngine;
-using UnityEngine.UI; 
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 public class GameManager : SingletonMonoBehaviour<GameManager>
 {
     float time;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     [Header("UI Game Over")]
     public GameObject gameOverPanel; // Panel UI untuk Game Over
-    public Text scoreText;
+    bool isGameOver = false;
+    public TMP_Text scoreText;
     void Start()
     {
 
@@ -29,9 +31,9 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         return time;
     }
 
-        public void GameOver()
+    public void GameOver()
     {
-
+        isGameOver = true;
         Debug.Log("Game Over!");
         if (gameOverPanel != null)
         {
@@ -54,6 +56,11 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     {
         SceneManager.LoadScene("MainMenu");
     }
+
+    public bool IsGameOver()
+    {
+        return isGameOver;
+    }
 }
-    
+
 

@@ -7,7 +7,7 @@ public class ScoreManager : MonoBehaviour
     public static ScoreManager Instance { get; private set; }
     private float score = 0f;
     public int Score => Mathf.FloorToInt(score);
-    public float scoreRate = 10f;
+    public float scoreRate = 1f;
     public TextMeshProUGUI scoreText;
 
     private void Awake()
