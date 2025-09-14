@@ -9,6 +9,8 @@ public class PlayerMovement : MonoBehaviour
 
     public GameObject projectilePrefab;
 
+    public Animator animator;
+
     // FireRate and Cooldown
     public float fireRate = 0.3f; // Time in seconds between shots
     private float nextFireTime = 0f;
@@ -41,6 +43,15 @@ public class PlayerMovement : MonoBehaviour
     {
         float inputX = Input.GetAxisRaw("Horizontal");
         float inputY = Input.GetAxisRaw("Vertical");
+
+        if (inputX != 0 || inputY != 0)
+        {
+            animator.SetBool("isWalking", true);
+        }
+        else
+        {
+            animator.SetBool("isWalking", false);
+        }
 
         Vector2 movement = new Vector2(inputX, inputY).normalized;
         rb.linearVelocity = movement * speed;

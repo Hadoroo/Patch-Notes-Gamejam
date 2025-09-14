@@ -25,6 +25,8 @@ public class EnemyBehavior : MonoBehaviour
 
     public GameObject projectilePrefab;
 
+    public Animator animator;
+
     public float orbitBaseSpeed = 100f; // orbit rotation speed in degrees/sec
     public float approachSpeed = 0.5f; // speed to decrease orbit radius
     private float orbitRadius;
@@ -146,6 +148,8 @@ public class EnemyBehavior : MonoBehaviour
 
         if (isCharging)
         {
+            animator.SetBool("isWalking", false);
+            animator.SetBool("isCharging", true);
             rb.linearVelocity = Vector2.zero;
             RotateTowards((Vector2)player.position - (Vector2)transform.position);
         }
@@ -157,6 +161,7 @@ public class EnemyBehavior : MonoBehaviour
             }
             else if (!isDashing)
             {
+                animator.SetBool("isWalking", true);
                 MoveTowardsPlayer(moveSpeed);
             }
         }
@@ -196,7 +201,7 @@ public class EnemyBehavior : MonoBehaviour
     void RotateTowards(Vector2 direction)
     {
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        rb.rotation = angle - 90f;
+        rb.rotation = angle - 180f;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
