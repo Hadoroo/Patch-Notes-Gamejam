@@ -593,6 +593,7 @@ MonoBehaviour:
   bulletSpeed: 10
   arrow: {fileID: 580042265}
   projectilePrefab: {fileID: 3496719997643880390, guid: a2d2cd38ee9178148bc8e03349f8c9b2, type: 3}
+  fireRate: 0.3
 --- !u!50 &958016722
 Rigidbody2D:
   serializedVersion: 5
@@ -934,7 +935,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   soundEffects:
-  - {fileID: 8300000, guid: 5fc3903713219934d9496ae376c60f9e, type: 3}
+  - {fileID: 8300000, guid: 4ba3f89161bf0a44c8a9db46d5233cd5, type: 3}
+  - {fileID: 8300000, guid: 8b9535557ac923e48961a3bf802417e9, type: 3}
+  - {fileID: 8300000, guid: bb3049b229e3f78428fccdfac38c56e8, type: 3}
+  - {fileID: 8300000, guid: 08964c3f8bce5f1418ccb02d07966d16, type: 3}
+  - {fileID: 8300000, guid: d87ea5dc8078d0b489aef1bd9b72b8a6, type: 3}
   sfxSource: {fileID: 1731515880}
 --- !u!82 &1731515880
 AudioSource:
@@ -949,7 +954,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.808
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -1023,7 +1028,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0.905
       inSlope: 0
       outSlope: 0
       tangentMode: 0

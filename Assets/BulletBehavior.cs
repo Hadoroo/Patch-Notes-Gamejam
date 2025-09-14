@@ -29,6 +29,11 @@ public class BulletBehavior : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other) {
         if (other.CompareTag("Enemy")) {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayRandomBulletSound();
+            }
+
             EnemyHealth enemyHealth = other.GetComponent<EnemyHealth>();
             if (enemyHealth != null) {
                 enemyHealth.TakeDamage(25f); // contoh damage

@@ -10,7 +10,7 @@ public class PlayerMovement : MonoBehaviour
     public GameObject projectilePrefab;
 
     // FireRate and Cooldown
-    public float fireRate = 0.2f; // Time in seconds between shots
+    public float fireRate = 0.3f; // Time in seconds between shots
     private float nextFireTime = 0f;
 
 

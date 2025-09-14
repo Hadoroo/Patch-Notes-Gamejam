@@ -8,11 +8,11 @@ public class AudioManager : MonoBehaviour
     // List Audio Effect
     public List<AudioClip> soundEffects;
     // Main Audio Source
-     public AudioSource sfxSource;
+    public AudioSource sfxSource;
 
     private void Awake()
     {
-    
+
         if (Instance == null)
         {
             Instance = this;
@@ -25,7 +25,7 @@ public class AudioManager : MonoBehaviour
     }
 
     // Summary : Audio Clip stored on list, play effect by index
-    
+
     public void PlaySoundEffect(int index)
     {
         if (sfxSource != null && index >= 0 && index < soundEffects.Count)
@@ -33,4 +33,14 @@ public class AudioManager : MonoBehaviour
             sfxSource.PlayOneShot(soundEffects[index]);
         }
     }
+    public void PlayRandomBulletSound()
+    {
+        if (sfxSource != null && soundEffects.Count > 0)
+        {
+            // Hardcode randomizer, 1-5 are bullet sounds
+            int randomIndex = Random.Range(1, 5);
+            sfxSource.PlayOneShot(soundEffects[randomIndex]);
+        }
+    }
+    
 }
