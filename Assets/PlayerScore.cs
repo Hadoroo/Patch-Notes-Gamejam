@@ -28,7 +28,6 @@ public class ScoreManager : MonoBehaviour
     {
         score += scoreRate * Time.deltaTime;
         UpdateScoreText();
-        Debug.Log(score);
     }
 
     void UpdateScoreText()
