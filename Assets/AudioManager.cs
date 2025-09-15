@@ -10,12 +10,17 @@ public class AudioManager : MonoBehaviour
     // Main Audio Source
     public AudioSource sfxSource;
 
+    // Music
+    public AudioClip backgroundMusic;
+    private AudioSource musicSource;
+
     private void Awake()
     {
 
         if (Instance == null)
         {
             Instance = this;
+            musicSource = gameObject.AddComponent<AudioSource>();
         }
         else
         {
@@ -24,8 +29,28 @@ public class AudioManager : MonoBehaviour
 
     }
 
-    // Summary : Audio Clip stored on list, play effect by index
+    public void PlayBackgroundMusic()
+    {
+        
+        if (musicSource != null && backgroundMusic != null)
+        {
+            musicSource.clip = backgroundMusic;
+            musicSource.loop = true;
+            musicSource.Play();
+        }
+    }
 
+    public void StopBackgroundMusic()
+    {
+        if (musicSource != null)
+        {
+            musicSource.Stop();
+        }
+    }
+
+
+
+    // Summary : Audio Clip stored on list, play effect by index
     public void PlaySoundEffect(int index)
     {
         if (sfxSource != null && index >= 0 && index < soundEffects.Count)

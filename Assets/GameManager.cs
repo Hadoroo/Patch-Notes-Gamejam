@@ -12,7 +12,11 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     public TMP_Text scoreText;
     void Start()
     {
-
+        //Play BGM
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayBackgroundMusic();
+        }
     }
 
     // Update is called once per frame
@@ -35,6 +39,16 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     {
         isGameOver = true;
         Debug.Log("Game Over!");
+
+
+         if (AudioManager.Instance != null)
+        {
+            // Stop background music
+            AudioManager.Instance.StopBackgroundMusic();
+            
+            // Play Died sound (5), Hardcode
+            AudioManager.Instance.PlaySoundEffect(5); 
+        }
         if (gameOverPanel != null)
         {
             gameOverPanel.SetActive(true);
