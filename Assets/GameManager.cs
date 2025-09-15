@@ -63,7 +63,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 
     public void RetryGame()
     {
-        SceneManager.LoadScene("Game");
+        SceneManager.LoadScene("SampleScene");
     }
 
     public void GoToMainMenu()

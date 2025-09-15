@@ -1,5 +1,6 @@
 using UnityEngine;
 
+
 public class EnemySpawner : MonoBehaviour
 {
     public GameObject basicEnemyPrefab, dasherEnemyPrefab, gunnerEnemyPrefab, orbiterEnemyPrefab;
@@ -34,6 +35,10 @@ public class EnemySpawner : MonoBehaviour
 
     void SpawnEnemy()
     {
+        if (GameManager.Instance.IsGameOver())
+        {
+            return; // Hentikan eksekusi fungsi
+        }
         // pilih prefab musuh random
         GameObject[] enemies = { basicEnemyPrefab, dasherEnemyPrefab, gunnerEnemyPrefab, orbiterEnemyPrefab };
         GameObject enemyPrefab = enemies[Random.Range(0, enemies.Length)];
