@@ -58,6 +58,7 @@ public class EnemyBehavior : MonoBehaviour
         {
             case EnemyType.Basic:
                 MoveTowardsPlayer(moveSpeed);
+                animator.SetBool("isWalking", true);
                 break;
 
             case EnemyType.Orbiter:
@@ -80,6 +81,7 @@ public class EnemyBehavior : MonoBehaviour
 
     void MoveTowardsPlayer(float speed)
     {
+        FlipSprite(transform.position.x - player.position.x);
         Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
         rb.linearVelocity = direction * speed;
     }
@@ -91,12 +93,15 @@ public class EnemyBehavior : MonoBehaviour
 
         if (distanceToPlayer > 4f)
         {
+            animator.SetBool("isWalking", true);
             // Dekat dulu sampai radius tertentu
             MoveTowardsPlayer(moveSpeed);
             orbitRadius = distanceToPlayer;
         }
         else
         {
+            animator.SetBool("isWalking", false); 
+            animator.SetBool("isOrbiting", true);
             // Radius mengecil perlahan
             orbitRadius = Mathf.Max(0.5f, orbitRadius - approachSpeed * Time.deltaTime);
 
@@ -116,6 +121,7 @@ public class EnemyBehavior : MonoBehaviour
                 transform.gameObject.GetComponent<SpriteRenderer>().enabled = false;
                 Transform explosionRadius = transform.Find("ExplosionRadius");
                 explosionRadius.gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                explosionRadius.gameObject.GetComponent<Collider2D>().enabled = true;
                 rb.linearVelocity = Vector2.zero;
                 hasExploded = true;
             }
