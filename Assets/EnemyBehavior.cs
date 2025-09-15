@@ -31,6 +31,10 @@ public class EnemyBehavior : MonoBehaviour
     public float approachSpeed = 0.5f; // speed to decrease orbit radius
     private float orbitRadius;
     private float orbitAngle; //
+     public AudioSource enemyAudioSource;
+    public AudioClip explosionSound;
+    public AudioClip gunnerShootSound;
+    private bool hasPlayedSound = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -124,6 +128,11 @@ public class EnemyBehavior : MonoBehaviour
                 explosionRadius.gameObject.GetComponent<Collider2D>().enabled = true;
                 rb.linearVelocity = Vector2.zero;
                 hasExploded = true;
+                if (enemyAudioSource != null && explosionSound != null && !hasPlayedSound)
+                {
+                    enemyAudioSource.PlayOneShot(explosionSound);
+                    hasPlayedSound = true;
+                }
             }
             else
             {
@@ -219,6 +228,12 @@ public class EnemyBehavior : MonoBehaviour
 
     void Shoot(float scaleX)
     {
+        // Shooting Sound
+        if (enemyAudioSource != null && gunnerShootSound != null)
+        {
+            enemyAudioSource.PlayOneShot(gunnerShootSound);
+        }
+
         GameObject bullet = Instantiate(projectilePrefab, transform.position, transform.rotation);
         Rigidbody2D rbBullet = bullet.GetComponent<Rigidbody2D>();
         if (scaleX < 0)

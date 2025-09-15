@@ -63,6 +63,13 @@ public class PlayerMovement : MonoBehaviour
 
     void Shoot()
     {
+
+         if (AudioManager.Instance != null)
+        {
+            // Play clip 6 [ShootFlower]
+            AudioManager.Instance.PlaySoundEffect(6);
+        }
+
         GameObject bullet = Instantiate(projectilePrefab, arrow.position, Quaternion.identity);
         bullet.GetComponent<Rigidbody2D>().linearVelocity = arrowScript.shootDirection * bulletSpeed;
         Destroy(bullet, 0.5f);
