@@ -20,16 +20,13 @@ public class Obstacle : MonoBehaviour
     }
 
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnCollisionEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
-            PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
-            if (playerHealth != null)
-            {
-                playerHealth.TakeDamage();
-            }
-            Destroy(gameObject);
+            Debug.Log("Player hit an obstacle");
+            PlayerHealth.Instance.TakeDamage();
+            // Destroy(gameObject);
         }
     }
 
