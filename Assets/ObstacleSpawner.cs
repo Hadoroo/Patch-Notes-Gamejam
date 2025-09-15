@@ -27,6 +27,11 @@ public class ObstacleSpawner : MonoBehaviour
 
     private void SpawnObstacle()
     {
+        if (GameManager.Instance.IsGameOver())
+        {
+            return; // Hentikan eksekusi fungsi
+        }
+
         if (obstaclePrefab == null)
         {
             Debug.LogError("Obstacle Prefab belum diatur di Spawner!");
