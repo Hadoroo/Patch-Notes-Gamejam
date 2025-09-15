@@ -15,11 +15,13 @@ public class PlayerMovement : MonoBehaviour
     public float fireRate = 0.3f; // Time in seconds between shots
     private float nextFireTime = 0f;
 
+    ArrowLookAtMouse arrowScript;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        arrowScript = arrow.GetComponent<ArrowLookAtMouse>();
     }
 
     // Update is called once per frame
@@ -29,7 +31,7 @@ public class PlayerMovement : MonoBehaviour
         Move();
 
         // Input Shoot adn check cooldown
-        if ((Input.GetKey(KeyCode.Space) || Input.GetMouseButton(0)) && Time.time >= nextFireTime)
+        if (Input.GetKey(KeyCode.Space) && Time.time >= nextFireTime)
         {
             Shoot();
 
@@ -61,8 +63,8 @@ public class PlayerMovement : MonoBehaviour
 
     void Shoot()
     {
-        GameObject bullet = Instantiate(projectilePrefab, arrow.position, arrow.rotation);
-        bullet.GetComponent<Rigidbody2D>().linearVelocity = arrow.up * bulletSpeed;
+        GameObject bullet = Instantiate(projectilePrefab, arrow.position, Quaternion.identity);
+        bullet.GetComponent<Rigidbody2D>().linearVelocity = arrowScript.shootDirection * bulletSpeed;
         Destroy(bullet, 0.5f);
     }
 

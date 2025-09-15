@@ -4,6 +4,10 @@ public class ArrowLookAtMouse : MonoBehaviour
 {
     public Transform player; // lingkaran (pusatnya)
     Camera cam;
+    // di ArrowController (assign bodySprite lewat Inspector)
+    public SpriteRenderer bodySprite; // sprite player/body, bukan arrow
+
+    [HideInInspector] public Vector3 shootDirection;
 
     void Start()
     {
@@ -12,21 +16,28 @@ public class ArrowLookAtMouse : MonoBehaviour
 
     void Update()
     {
-        // Ambil posisi mouse di world
         Vector3 mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0f;
 
-        // Hitung arah dari player ke mouse
-        Vector3 direction = mousePos - player.position;
+        // flip body player (bukan arrow)
+        bool faceRight = mousePos.x > player.position.x;
+        if (bodySprite != null)
+            bodySprite.flipX = faceRight;
 
-        // Hitung sudut rotasi
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        // arah tembak
+        shootDirection = (mousePos - player.position).normalized;
+        float angle = Mathf.Atan2(shootDirection.y, shootDirection.x) * Mathf.Rad2Deg;
 
-        // Set rotasi arrow (di Unity default "kanan" = 0 derajat, kalau segitiga menghadap atas perlu offset -90)
-        transform.rotation = Quaternion.Euler(0, 0, angle - 90);
+        // rotasi arrow (offset disesuaikan dengan sprite arrow)
+        transform.rotation = Quaternion.Euler(0, 0, angle - 210f);
 
-        // Posisikan arrow tetap di keliling lingkaran
-        float radius = 0.5f; // jarak dari player ke arrow (atur sesuai ukuran lingkaran)
-        transform.position = player.position + direction.normalized * radius;
+        // scale arrow fix (tidak usah dibolak-balik)
+        transform.localScale = new Vector3(1.38f, 1.38f, 1.38f);
+
+        // posisi arrow di radius kecil dari player
+        float radius = 0.3f;
+        transform.position = player.position + shootDirection * radius;
     }
+
+
 }
