@@ -54,10 +54,10 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
             gameOverPanel.SetActive(true);
         }
 
-        int finalScore = (int)time;
+        int finalScore = ScoreManager.Instance.Score;
         if (scoreText != null)
         {
-            scoreText.text = finalScore.ToString() + " POINTS";
+            scoreText.text = finalScore.ToString() + " DREAMS";
         }
     }
 
